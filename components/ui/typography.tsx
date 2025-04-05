@@ -123,3 +123,19 @@ export function TextMuted({ className, ...props }: TextProps) {
     <p className={cn("text-sm text-muted-foreground", className)} {...props} />
   );
 }
+
+export function TextLink({
+  className,
+  ...props
+}: TextProps & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  return (
+    <a
+      className={cn(
+        "text-sm text-muted-foreground hover:underline hover:underline-offset-4",
+        className
+      )}
+      href={props.href}
+      {...props}
+    />
+  );
+}
