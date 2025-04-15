@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { TextH2, TextLink } from "../../components/ui/typography";
 
 export default function Home() {
@@ -18,7 +19,9 @@ export default function Home() {
           </li>
         </ol>
 
-        <Button className="flex self-center">Submit Dates Now</Button>
+        <Link href="/search">
+          <Button className="flex self-center">Submit Dates Now</Button>
+        </Link>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <TextLink
