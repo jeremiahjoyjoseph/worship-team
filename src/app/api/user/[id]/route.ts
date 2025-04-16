@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
+import mongoose from "mongoose";
 import User from "@/models/user";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
-    console.log("id", id, params);
+
+    // Validate the id
+    if (id && !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    }
 
     await connectToDatabase();
     const user = await User.findById(id);

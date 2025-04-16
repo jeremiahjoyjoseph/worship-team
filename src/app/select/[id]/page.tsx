@@ -1,8 +1,9 @@
 "use client";
 import { use, useEffect, useState } from "react";
 import { TextH2 } from "../../../../components/ui/typography";
-import { fetchUser } from "@/app/api/user/[id]/api";
+
 import { IUser } from "@/types/user";
+import { fetchUser } from "@/app/api/user/api";
 
 export default function Search(props: { params: Promise<{ id: string }> }) {
   const { id } = use(props.params);
@@ -18,8 +19,10 @@ export default function Search(props: { params: Promise<{ id: string }> }) {
       }
     };
 
-    getUser();
-  }, []);
+    if (id) {
+      getUser();
+    }
+  }, [id]);
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
