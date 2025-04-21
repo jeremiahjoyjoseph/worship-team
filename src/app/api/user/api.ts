@@ -4,8 +4,11 @@ export const getUsers = async () => {
     if (!response.ok) {
       throw new Error("Failed to fetch users");
     }
-    const data = await response.json();
-    return data;
+    const { success, data } = await response.json();
+    if (!success) {
+      throw new Error("Failed to fetch users: API returned an error");
+    }
+    return data; // Return the `data` field containing the users
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error;
