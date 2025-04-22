@@ -104,3 +104,45 @@ export const getSubmittedDates = async (userId?: string, month?: string) => {
     throw error;
   }
 };
+
+export const submitAvailability = async (
+  userId: string,
+  month: string,
+  submittedDates: string[]
+) => {
+  try {
+    if (!userId || !month || !submittedDates.length) {
+      throw new Error(
+        "You need to pass userId, month, and at least one submitted date"
+      );
+    }
+
+    const response = await fetch(
+      `/api/roster/${userId}?month=${encodeURIComponent(month)}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dates: submittedDates,
+        }),
+      }
+    );
+
+    const { success, data, message } = await response.json();
+
+    if (!response.ok) {
+      throw new Error(message || "Failed to submit availability");
+    }
+
+    if (!success) {
+      throw new Error(`Failed to submit availability: ${message}`);
+    }
+
+    return data; // Return the response data if successful
+  } catch (error) {
+    console.error("Error submitting availability:", error);
+    throw error;
+  }
+};

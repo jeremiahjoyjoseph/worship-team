@@ -1,8 +1,12 @@
 "use client";
 import { use, useEffect, useState } from "react";
-import { TextP } from "../../../../../../components/ui/typography";
+import { TextH2 } from "../../../../../../components/ui/typography";
 
-import { createRoster, getRoster } from "@/app/api/roster/api";
+import {
+  createRoster,
+  getRoster,
+  submitAvailability,
+} from "@/app/api/roster/api";
 import { Button } from "@/components/ui/button";
 import CheckboxList from "@/components/ui/checkbox-list";
 import { ISubmission } from "@/types/roster";
@@ -17,7 +21,6 @@ export default function Search(props: {
   const router = useRouter();
   const [roster, setRoster] = useState();
 
-  const [submittedDates, setSubmittedDates] = useState<string[]>([]);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
   const [requiredDates, setRequiredDates] = useState<string[]>([]);
@@ -57,7 +60,8 @@ export default function Search(props: {
           (sub: ISubmission) => sub.userId === userId
         );
         if (submission && submission.submittedDates?.length) {
-          setSubmittedDates(submission.submittedDates);
+          setRequiredDates(rosterData.requiredDates);
+          setSelectedDates(submission.submittedDates);
           setHasSubmitted(true);
         } else {
           setHasSubmitted(false);
@@ -75,37 +79,40 @@ export default function Search(props: {
     fetchRosterAndSubmission();
   }, [month, userId]);
 
+  const onSubmit = async () => {
+    try {
+      if (!userId || !month || selectedDates.length === 0) {
+        throw new Error("User ID, month, and selected dates are required");
+      }
+
+      await submitAvailability(userId, month, selectedDates);
+      alert("Availability submitted successfully!");
+      router.push("/select/thank-you");
+      setHasSubmitted(true);
+    } catch (error) {
+      console.error("Error submitting availability:", error);
+      alert("Failed to submit availability. Please try again.");
+    }
+  };
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Button onClick={() => router.back()}>
         <ChevronLeft /> Go Back
       </Button>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
-        {hasSubmitted ? (
-          <div>
-            <TextP>
-              Looks like you have already submitted the dates for this month.
-              Would you like to edit them?
-            </TextP>
-            <ul className="list-disc pl-5 mt-4">
-              {submittedDates.map((date) => (
-                <li key={date}>{date}</li>
-              ))}
-            </ul>
-            <div className="flex gap-4 justify-center mt-4">
-              <Button>Yes</Button>
-              <Button>No</Button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <CheckboxList
-              items={requiredDates}
-              selectedItems={selectedDates}
-              onChange={setSelectedDates}
-            />
-          </div>
-        )}
+        <div>
+          <TextH2 className="mb-4">Select Your Dates</TextH2>
+
+          <CheckboxList
+            items={requiredDates}
+            selectedItems={selectedDates}
+            onChange={setSelectedDates}
+          />
+          <Button className="flex justify-center mt-8" onClick={onSubmit}>
+            Submit
+          </Button>
+        </div>
       </main>
     </div>
   );

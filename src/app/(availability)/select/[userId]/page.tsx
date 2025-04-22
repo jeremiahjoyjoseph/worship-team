@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Search(props: { params: Promise<{ userId: string }> }) {
   const { userId } = use(props.params);
@@ -26,10 +26,19 @@ export default function Search(props: { params: Promise<{ userId: string }> }) {
       year: "numeric",
     });
     const now = new Date();
-    return [0, 1, 2].map((offset) => {
-      const date = new Date(now.getFullYear(), now.getMonth() + offset);
-      return formatter.format(date);
-    });
+    const currentDay = now.getDate();
+    const halfwayPoint = new Date(now.getFullYear(), now.getMonth(), 15);
+
+    return [1, 2, 3, 4]
+      .map((offset) => {
+        const date = new Date(now.getFullYear(), now.getMonth() + offset);
+        // Exclude the next month if we are past the halfway point of the current month
+        if (currentDay > halfwayPoint.getDate() && offset === 1) {
+          return null;
+        }
+        return formatter.format(date);
+      })
+      .filter(Boolean);
   };
 
   return (

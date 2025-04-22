@@ -25,7 +25,7 @@ export default function Search() {
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
         <Command className="rounded-lg border shadow-md w-full">
           <CommandInput
-            placeholder="Who are you?"
+            placeholder="Name"
             onValueChange={(value) => setQuery(value)}
             value={query}
           />

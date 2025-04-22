@@ -1,4 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
+import { TextCode } from "../../../components/ui/typography";
 
 type CheckboxListProps = {
   items: string[];
@@ -30,9 +31,9 @@ const CheckboxList: React.FC<CheckboxListProps> = ({
           />
           <label
             htmlFor={item}
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {item}
+            <TextCode>{item}</TextCode>
           </label>
         </div>
       ))}

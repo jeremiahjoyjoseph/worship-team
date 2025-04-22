@@ -60,6 +60,18 @@ export function TextP({ className, ...props }: TextProps) {
   );
 }
 
+export function TextCode({ className, ...props }: TextProps) {
+  return (
+    <p
+      className={cn(
+        "leading-7 [&:not(:first-child)]:mt-6 font-[family-name:var(--font-geist-mono)]",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
 export function TextBlockquote({ className, ...props }: TextProps) {
   return (
     <blockquote
