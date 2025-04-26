@@ -52,19 +52,14 @@ export function TextH4({ className, ...props }: TextProps) {
 }
 
 export function TextP({ className, ...props }: TextProps) {
-  return (
-    <p
-      className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}
-      {...props}
-    />
-  );
+  return <p className={cn("leading-7", className)} {...props} />;
 }
 
 export function TextCode({ className, ...props }: TextProps) {
   return (
     <p
       className={cn(
-        "leading-7 [&:not(:first-child)]:mt-6 font-[family-name:var(--font-geist-mono)]",
+        "leading-7 [&:not(:first-child)]:mt-2 font-[family-name:var(--font-geist-mono)]",
         className
       )}
       {...props}

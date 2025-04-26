@@ -100,7 +100,7 @@ export default function Search(props: {
       <Button onClick={() => router.back()}>
         <ChevronLeft /> Go Back
       </Button>
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-[500px]">
         <div>
           <TextH2 className="mb-4">Select Your Dates</TextH2>
 

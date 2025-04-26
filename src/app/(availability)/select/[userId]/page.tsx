@@ -46,7 +46,7 @@ export default function Search(props: { params: Promise<{ userId: string }> }) {
       <Button onClick={() => router.back()}>
         <ChevronLeft /> Go Back
       </Button>
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-[500px]">
         <TextH3 className="text-center sm:text-left">{`Choose a month!`}</TextH3>
         <Select value={month} onValueChange={(value) => setMonth(value)}>
           <SelectTrigger className="w-full">
@@ -54,11 +54,13 @@ export default function Search(props: { params: Promise<{ userId: string }> }) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {getMonths().map((month) => (
-                <SelectItem value={month} key={month}>
-                  {month}
-                </SelectItem>
-              ))}
+              {getMonths()
+                .filter((month): month is string => month !== null)
+                .map((month) => (
+                  <SelectItem value={month} key={month}>
+                    {month}
+                  </SelectItem>
+                ))}
             </SelectGroup>
           </SelectContent>
         </Select>
