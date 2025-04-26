@@ -1,5 +1,6 @@
 import { Document } from "mongoose";
 import { BandRole, Location } from "./user";
+import { IUser } from "./user";
 
 export interface IWorshipTeam {
   id: string;
@@ -37,3 +38,7 @@ export interface IRoster extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type AvailabilityUser = IUser & {
+  submittedDates: string[];
+};
