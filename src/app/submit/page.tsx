@@ -1,6 +1,5 @@
 "use client";
-import { use, useState } from "react";
-import { TextH3 } from "../../../../../components/ui/typography";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,9 +13,9 @@ import {
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TextH3 } from "../../../components/ui/typography";
 
-export default function Search(props: { params: Promise<{ userId: string }> }) {
-  const { userId } = use(props.params);
+export default function SubmitMonth() {
   const router = useRouter();
   const [month, setMonth] = useState<string>(""); // State for selected month
 
@@ -64,7 +63,7 @@ export default function Search(props: { params: Promise<{ userId: string }> }) {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Link href={`/select/${userId}/${month.replace(/\s+/g, "-")}`}>
+        <Link href={`/submit/${month.replace(/\s+/g, "-")}`}>
           <Button>Next</Button>
         </Link>
       </main>

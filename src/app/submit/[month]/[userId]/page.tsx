@@ -1,6 +1,6 @@
 "use client";
 import { use, useEffect, useState } from "react";
-import { TextH2 } from "../../../../../../components/ui/typography";
+import { TextH2 } from "../../../../../components/ui/typography";
 
 import {
   createRoster,
@@ -19,9 +19,6 @@ export default function Search(props: {
   const { userId } = use(props.params);
   const { month } = use(props.params);
   const router = useRouter();
-  const [roster, setRoster] = useState();
-
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
   const [requiredDates, setRequiredDates] = useState<string[]>([]);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
@@ -52,9 +49,6 @@ export default function Search(props: {
           }
         }
 
-        // Step 3: Set the fetched or created roster
-        setRoster(rosterData);
-
         // Step 4: Check if the user has submitted dates
         const submission = rosterData.submissions?.find(
           (sub: ISubmission) => sub.userId === userId
@@ -62,9 +56,7 @@ export default function Search(props: {
         if (submission && submission.submittedDates?.length) {
           setRequiredDates(rosterData.requiredDates);
           setSelectedDates(submission.submittedDates);
-          setHasSubmitted(true);
         } else {
-          setHasSubmitted(false);
           if (rosterData?.requiredDates) {
             setRequiredDates(rosterData.requiredDates);
           } else {
@@ -87,8 +79,7 @@ export default function Search(props: {
 
       await submitAvailability(userId, month, selectedDates);
       alert("Availability submitted successfully!");
-      router.push("/select/thank-you");
-      setHasSubmitted(true);
+      router.push("/submit/thank-you");
     } catch (error) {
       console.error("Error submitting availability:", error);
       alert("Failed to submit availability. Please try again.");

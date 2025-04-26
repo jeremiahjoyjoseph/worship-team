@@ -19,7 +19,7 @@ export default function Home() {
           </li>
         </ol>
 
-        <Link href="/search">
+        <Link href="/submit">
           <Button className="flex self-center">Submit Dates Now</Button>
         </Link>
       </main>
