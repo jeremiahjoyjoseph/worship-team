@@ -1,6 +1,6 @@
 "use client";
 
-import { DatePicker } from "@/components/ui/date-picker";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 import { format } from "date-fns";
 
 interface DataTableToolbarMonthProps {
@@ -22,9 +22,9 @@ export function DataTableToolbarMonth({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        <DatePicker
-          setDate={onDateSelect}
-          date={month ? new Date(`${month}-01`) : undefined}
+        <MonthYearPicker
+          onMonthSelect={onDateSelect}
+          selectedMonth={month ? new Date(month) : undefined}
         />
       </div>
     </div>
