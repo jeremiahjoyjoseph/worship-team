@@ -6,12 +6,18 @@ import { IUser } from "@/types/user";
 import React from "react";
 import { columns } from "./components/columns";
 import { DataTable } from "./components/data-table";
-import { DataTableToolbar } from "./components/data-table-toolbar";
+import { DataTableToolbarMonth } from "./components/data-table-toolbar-month";
 
 export default function Availability() {
   const [data, setData] = React.useState<AvailabilityUser[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [month, setMonth] = React.useState<string | undefined>();
+  const [month, setMonth] = React.useState<string | undefined>(() => {
+    const currentDate = new Date();
+    return currentDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    });
+  });
 
   React.useEffect(() => {
     async function fetchAvailability() {
@@ -60,7 +66,7 @@ export default function Availability() {
   return (
     <div className="w-[100vw] pb-10">
       <div className="mt-8 px-8">
-        <DataTableToolbar month={month} setMonth={setMonth} />
+        <DataTableToolbarMonth month={month} setMonth={setMonth} />
       </div>
       <DataTable data={data} columns={columns} isLoading={isLoading} />
     </div>

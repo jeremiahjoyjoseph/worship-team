@@ -7,3 +7,8 @@ export const USER_ROLES = [
   "sound-team",
   "guest",
 ];
+
+export const USER_ROLES_OPTIONS = USER_ROLES.map((role) => ({
+  label: role.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()),
+  value: role,
+}));

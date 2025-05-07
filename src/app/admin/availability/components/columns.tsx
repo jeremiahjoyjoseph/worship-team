@@ -22,6 +22,11 @@ export const columns: ColumnDef<AvailabilityUser>[] = [
     ),
   },
   {
+    accessorKey: "gender",
+    header: "Gender",
+    cell: ({ row }) => <span>{row.original.gender}</span>,
+  },
+  {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => <span>{row.original.role}</span>,

@@ -17,8 +17,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-import { TextH4 } from "../../../../../components/ui/typography";
 import { DataTablePagination } from "./data-pagination";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,10 +50,10 @@ export function DataTable<TData, TValue>({
     <>
       {/* Table */}
       <div className="w-full mt-4 px-8">
-        <TextH4 className="border border-b-0 rounded-tl-md rounded-tr-md py-2 px-4 text-center">
-          Worship Leader
-        </TextH4>
-        <div className="rounded-bl-md rounded-br-md border max-h-[532px] overflow-y-auto">
+        <div>
+          <DataTableToolbar table={table} />
+        </div>
+        <div className="mt-4 rounded-bl-md rounded-br-md border max-h-[532px] overflow-y-auto">
           <Table className="w-full">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
