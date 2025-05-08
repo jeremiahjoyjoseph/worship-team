@@ -8,6 +8,6 @@ export const BAND_ROLES = [
 ];
 
 export const BAND_ROLES_OPTIONS = BAND_ROLES.map((role) => ({
-  value: role,
   label: role.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()),
+  value: role,
 }));

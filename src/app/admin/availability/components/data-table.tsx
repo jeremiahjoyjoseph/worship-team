@@ -24,12 +24,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading: boolean;
+  month: string | undefined;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
+  month,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -51,7 +53,7 @@ export function DataTable<TData, TValue>({
       {/* Table */}
       <div className="w-full mt-4 px-8">
         <div>
-          <DataTableToolbar table={table} />
+          <DataTableToolbar table={table} month={month} />
         </div>
         <div className="mt-4 rounded-bl-md rounded-br-md border max-h-[532px] overflow-y-auto">
           <Table className="w-full">

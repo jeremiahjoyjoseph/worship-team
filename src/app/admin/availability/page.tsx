@@ -68,7 +68,12 @@ export default function Availability() {
       <div className="mt-8 px-8">
         <DataTableToolbarMonth month={month} setMonth={setMonth} />
       </div>
-      <DataTable data={data} columns={columns} isLoading={isLoading} />
+      <DataTable
+        data={data}
+        columns={columns}
+        isLoading={isLoading}
+        month={month}
+      />
     </div>
   );
 }

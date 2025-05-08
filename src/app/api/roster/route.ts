@@ -3,27 +3,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Roster from "@/models/roster";
 import moment from "moment";
 import { ISubmission } from "@/types/roster";
-
-// Helper: Get all Sundays for a given "MMMM YYYY" string
-function getAllSundays(monthYear: string): string[] {
-  const sundays: string[] = [];
-  let date = moment(`1 ${monthYear}`, "D MMMM YYYY");
-
-  const month = date.format("MMMM");
-  const year = date.format("YYYY");
-
-  const monthIndex = moment().month(month).month();
-  date = moment(`${year}-${monthIndex + 1}-01`, "YYYY-MM-DD");
-
-  while (date.month() === monthIndex) {
-    if (date.day() === 0) {
-      sundays.push(date.format("D MMMM YYYY"));
-    }
-    date.add(1, "days");
-  }
-
-  return sundays;
-}
+import { getAllSundays } from "@/util/date-utils";
 
 export async function POST(req: Request) {
   try {

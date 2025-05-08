@@ -6,19 +6,29 @@ import { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { BAND_ROLES_OPTIONS } from "@/constants/band-roles";
+import { getDateOptionsFromSundays } from "@/util/date-utils";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  month: string | undefined;
 }
 
 export function DataTableToolbar<TData>({
   table,
+  month,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
+        {table.getColumn("submittedDates") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("submittedDates")}
+            title="Dates"
+            options={getDateOptionsFromSundays(month ?? "")}
+          />
+        )}
         {table.getColumn("role") && (
           <DataTableFacetedFilter
             column={table.getColumn("role")}
@@ -36,9 +46,9 @@ export function DataTableToolbar<TData>({
             ]}
           />
         )}
-        {table.getColumn("team-role") && (
+        {table.getColumn("wtRolePrimary") && (
           <DataTableFacetedFilter
-            column={table.getColumn("team-role")}
+            column={table.getColumn("wtRolePrimary")}
             title="WT Role"
             options={BAND_ROLES_OPTIONS}
           />
