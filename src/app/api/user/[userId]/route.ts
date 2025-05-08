@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
   try {
-    const { userId } = context.params;
+    const { userId } = params;
 
     // Validate the id
     if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
@@ -37,10 +37,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
   try {
-    const { userId } = context.params;
+    const { userId } = params;
 
     // Validate the id
     if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
@@ -84,10 +84,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
   try {
-    const { userId } = context.params;
+    const { userId } = params;
 
     // Validate the id
     if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
