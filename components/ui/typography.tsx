@@ -52,9 +52,16 @@ export function TextH4({ className, ...props }: TextProps) {
 }
 
 export function TextP({ className, ...props }: TextProps) {
+  return <p className={cn("leading-7", className)} {...props} />;
+}
+
+export function TextCode({ className, ...props }: TextProps) {
   return (
     <p
-      className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}
+      className={cn(
+        "leading-7 [&:not(:first-child)]:mt-2 font-[family-name:var(--font-geist-mono)]",
+        className
+      )}
       {...props}
     />
   );
@@ -121,5 +128,21 @@ export function TextSmall({ className, ...props }: TextProps) {
 export function TextMuted({ className, ...props }: TextProps) {
   return (
     <p className={cn("text-sm text-muted-foreground", className)} {...props} />
+  );
+}
+
+export function TextLink({
+  className,
+  ...props
+}: TextProps & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  return (
+    <a
+      className={cn(
+        "text-sm text-muted-foreground hover:underline hover:underline-offset-4",
+        className
+      )}
+      href={props.href}
+      {...props}
+    />
   );
 }
