@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Roster from "@/models/roster";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { userId: string } }
+  req: NextRequest,
+  context: { params: { userId: string } }
 ) {
   try {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
     const month = searchParams.get("month");
-    const { userId } = params;
+    const { userId } = context.params;
 
     if (!month) {
       return NextResponse.json(
@@ -53,15 +53,15 @@ export async function GET(
 }
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { userId: string } }
+  req: NextRequest,
+  context: { params: { userId: string } }
 ) {
   try {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
     const month = searchParams.get("month")?.replace(/-/g, " ");
-    const { userId } = params;
+    const { userId } = context.params;
     const body = await req.json();
 
     if (!month) {
