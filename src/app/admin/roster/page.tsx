@@ -63,40 +63,7 @@ export default function Roster() {
     role: string,
     user: IUser
   ) => {
-    try {
-      const updatedData = data.map((locRoster) => {
-        if (locRoster.location !== location) return locRoster;
-
-        const updatedDateRosters = locRoster.dateRosters.map((dateRoster) => {
-          if (dateRoster.date !== date) return dateRoster;
-
-          const updatedWorshipTeam = dateRoster.worshipTeam.map((member) => {
-            if (member.bandRole !== role) return member;
-            return {
-              ...member,
-              id: user._id,
-              name: user.fullName ?? "",
-            };
-          });
-
-          return {
-            ...dateRoster,
-            worshipTeam: updatedWorshipTeam,
-          };
-        });
-
-        return {
-          ...locRoster,
-          dateRosters: updatedDateRosters,
-        };
-      });
-
-      // Update the roster in the database
-      await updateRosterTemplate(month!, updatedData);
-      setData(updatedData);
-    } catch (err) {
-      console.error("Error updating roster:", err);
-    }
+    console.log(location, date, role, user);
   };
 
   return (
