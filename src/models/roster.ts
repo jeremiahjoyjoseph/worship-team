@@ -12,18 +12,21 @@ import mongoose, { Model, Schema } from "mongoose";
 const WorshipTeamSchema = new Schema<IWorshipTeam>({
   id: { type: String, required: true },
   name: { type: String, required: true },
-  wtPrimaryRole: {
+  bandRole: {
     type: String,
     enum: Object.values(BandRole),
     required: true,
   },
-  wtSecondaryRole: { type: String, enum: Object.values(BandRole) },
-  isMd: { type: Boolean, default: false },
+});
+
+const DateRosterSchema = new Schema({
+  date: { type: String, required: true }, // Sunday date
+  worshipTeam: [WorshipTeamSchema],
 });
 
 const LocationRosterSchema = new Schema<ILocationRoster>({
   location: { type: String, enum: Object.values(Location), required: true },
-  worshipTeam: [WorshipTeamSchema],
+  dateRosters: [DateRosterSchema], // Multiple dates with their respective teams
 });
 
 const EventDateSchema = new Schema<IEventDate>({

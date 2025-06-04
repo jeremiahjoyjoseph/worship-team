@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
+  Row,
 } from "@tanstack/react-table";
 import * as React from "react";
 
@@ -24,9 +25,12 @@ import { columns } from "./components/columns";
 import { DataTablePagination } from "./components/data-pagination";
 import { DataTableToolbar } from "./components/data-table-toolbar";
 import { UserTableContext } from "./context/user-table-context";
+import { ViewDetailsDialog } from "./components/view-details-dialog";
 
 export default function Team() {
   const [data, setData] = React.useState<IUser[]>([]);
+  const [selectedRow, setSelectedRow] = React.useState<Row<IUser> | null>(null);
+  const [isViewDetailsOpen, setViewDetailsOpen] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -99,7 +103,14 @@ export default function Team() {
                   </TableRow>
                 ) : table.getRowModel().rows.length > 0 ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => {
+                        setSelectedRow(row);
+                        setViewDetailsOpen(true);
+                      }}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {flexRender(
@@ -125,6 +136,14 @@ export default function Team() {
         <div className="mt-4 w-[100vw] px-8">
           <DataTablePagination table={table} />
         </div>
+
+        {selectedRow && (
+          <ViewDetailsDialog
+            row={selectedRow}
+            open={isViewDetailsOpen}
+            setOpen={setViewDetailsOpen}
+          />
+        )}
       </div>
     </UserTableContext.Provider>
   );

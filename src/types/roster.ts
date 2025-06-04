@@ -5,14 +5,17 @@ import { IUser } from "./user";
 export interface IWorshipTeam {
   id: string;
   name: string;
-  wtPrimaryRole: BandRole;
-  wtSecondaryRole?: BandRole;
-  isMd: boolean;
+  bandRole: BandRole;
+}
+
+export interface IDateRoster {
+  date: string;
+  worshipTeam: IWorshipTeam[];
 }
 
 export interface ILocationRoster {
   location: Location;
-  worshipTeam: IWorshipTeam[];
+  dateRosters: IDateRoster[];
 }
 
 export interface IEventDate {

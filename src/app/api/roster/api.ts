@@ -1,3 +1,5 @@
+import { ILocationRoster } from "@/types/roster";
+
 export const getRoster = async (month?: string) => {
   try {
     if (!month) {
@@ -72,6 +74,43 @@ export const createRoster = async (month?: string) => {
     if (data && data.length) return data[0];
   } catch (error) {
     console.error("Error creating roster:", error);
+    throw error;
+  }
+};
+
+export const updateRosterTemplate = async (
+  month: string,
+  templateRoster: ILocationRoster[]
+) => {
+  try {
+    if (!month || !templateRoster) {
+      throw new Error("You need to pass both month and templateRoster");
+    }
+
+    const response = await fetch("/api/roster", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        month: month.replaceAll("-", " "),
+        roster: templateRoster,
+      }),
+    });
+
+    const { success, data, message } = await response.json();
+
+    if (!response.ok) {
+      throw new Error(message || "Failed to update roster template");
+    }
+
+    if (!success) {
+      throw new Error(`Failed to update roster template: ${message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error updating roster template:", error);
     throw error;
   }
 };

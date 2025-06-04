@@ -5,6 +5,8 @@ export const BAND_ROLES = [
   "acoustic",
   "bass",
   "electric",
+  "bgv",
+  "md",
 ];
 
 export const BAND_ROLES_OPTIONS = BAND_ROLES.map((role) => ({
