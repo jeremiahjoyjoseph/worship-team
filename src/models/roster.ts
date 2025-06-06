@@ -4,19 +4,26 @@ import {
   IRoster,
   ISubmission,
   IWorshipTeam,
+  IWorshipTeamMember,
 } from "@/types/roster";
 import { BandRole, Location } from "@/types/user";
 import mongoose, { Model, Schema } from "mongoose";
 
 // Define schemas
-const WorshipTeamSchema = new Schema<IWorshipTeam>({
+
+const BandRoleMembers = new Schema<IWorshipTeamMember>({
   id: { type: String, required: true },
   name: { type: String, required: true },
+  isMd: { type: Boolean, required: true },
+});
+
+const WorshipTeamSchema = new Schema<IWorshipTeam>({
   bandRole: {
     type: String,
     enum: Object.values(BandRole),
     required: true,
   },
+  members: [BandRoleMembers],
 });
 
 const DateRosterSchema = new Schema({

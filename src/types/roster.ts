@@ -2,10 +2,15 @@ import { Document } from "mongoose";
 import { BandRole, Location } from "./user";
 import { IUser } from "./user";
 
-export interface IWorshipTeam {
+export interface IWorshipTeamMember {
   id: string;
   name: string;
+  isMd?: boolean;
+}
+
+export interface IWorshipTeam {
   bandRole: BandRole;
+  members: IWorshipTeamMember[];
 }
 
 export interface IDateRoster {

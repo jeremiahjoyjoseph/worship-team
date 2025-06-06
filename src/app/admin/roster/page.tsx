@@ -42,10 +42,8 @@ export default function Roster() {
               (date) => ({
                 date,
                 worshipTeam: BAND_ROLES.map((role) => ({
-                  id: "",
-                  name: "",
                   bandRole: role as BandRole,
-                  isMd: false,
+                  members: [],
                 })),
               })
             ),
@@ -93,10 +91,21 @@ export default function Roster() {
               worshipTeam: dateRoster.worshipTeam.map((member) =>
                 member.bandRole === role
                   ? {
-                      id: user._id,
-                      name: user.fullName ?? "",
+                      members: member.members
+                        ? [
+                            ...member.members,
+                            {
+                              id: user._id,
+                              name: user.fullName ?? "",
+                            },
+                          ]
+                        : [
+                            {
+                              id: user._id,
+                              name: user.fullName ?? "",
+                            },
+                          ],
                       bandRole: role as BandRole,
-                      isMd: user.md ?? false,
                     }
                   : member
               ),
@@ -117,7 +126,6 @@ export default function Roster() {
       });
     } catch (err) {
       console.error("Error updating roster:", err);
-      // Optionally: Add error handling UI feedback here
     } finally {
       setIsLoading(false);
     }

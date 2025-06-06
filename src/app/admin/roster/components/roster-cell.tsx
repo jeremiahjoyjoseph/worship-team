@@ -30,7 +30,9 @@ export function RosterCell({
   onUpdate,
 }: RosterCellProps) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const selectedUser = worshipTeam.find((member) => member.bandRole === role);
+  const selectedUser = worshipTeam.find(
+    (team) => team.bandRole === role
+  )?.members;
 
   const usersAssignedToDate = React.useMemo(() => {
     const assignedUsers = new Set<string>();
@@ -39,10 +41,12 @@ export function RosterCell({
         (dr) => dr.date === date
       );
       if (dateRoster) {
-        dateRoster.worshipTeam.forEach((member) => {
-          if (member.id) {
-            assignedUsers.add(member.id);
-          }
+        dateRoster.worshipTeam.forEach((team) => {
+          team.members?.forEach((member) => {
+            if (member.id) {
+              assignedUsers.add(member.id);
+            }
+          });
         });
       }
     });
@@ -98,7 +102,9 @@ export function RosterCell({
         className="h-20 w-full justify-start text-left font-normal hover:bg-muted/50"
         onClick={() => setIsOpen(true)}
       >
-        {selectedUser ? selectedUser.name : ""}
+        {selectedUser
+          ? selectedUser.map((member) => member.name).join(", ")
+          : ""}
       </Button>
 
       <AddUser
@@ -108,7 +114,6 @@ export function RosterCell({
         onOpenChange={setIsOpen}
         onUserSelect={handleUserSelect}
         users={availableAndUnusedUsers}
-        submissions={submissions}
       />
     </>
   );
