@@ -1,5 +1,5 @@
 export const BAND_ROLES = [
-  "vocals",
+  "worship-leader",
   "drums",
   "keys",
   "acoustic",

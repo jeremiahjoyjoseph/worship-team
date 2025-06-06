@@ -154,3 +154,57 @@ export async function DELETE(req: Request) {
     );
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    await connectToDatabase();
+
+    const body = await req.json();
+    const { month, roster } = body;
+
+    if (!month || !roster) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Month and roster data are required",
+        },
+        { status: 400 }
+      );
+    }
+
+    const inputDate = moment(month, "MMMM YYYY", true);
+
+    // Validate format
+    if (!inputDate.isValid()) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "The month must be in the format MMMM YYYY. Example: February 2024",
+        },
+        { status: 400 }
+      );
+    }
+
+    const updatedRoster = await Roster.findOneAndUpdate(
+      { month },
+      { $set: roster },
+      { new: true }
+    );
+
+    return NextResponse.json({
+      success: true,
+      message: "Roster has been updated",
+      data: updatedRoster,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to update roster.",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}

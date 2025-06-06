@@ -1,7 +1,7 @@
-import { IWorshipTeam } from "@/types/roster";
-import { ColumnDef } from "@tanstack/react-table";
+import { IWorshipTeam, ISubmission, ILocationRoster } from "@/types/roster";
+import { Column, ColumnDef } from "@tanstack/react-table";
 import { RosterCell } from "./roster-cell";
-import { IUser } from "@/types/user";
+import { IUser, Location } from "@/types/user";
 import { Row } from "@tanstack/react-table";
 import { BAND_ROLES } from "@/constants/band-roles";
 
@@ -12,7 +12,11 @@ export interface TableData {
 }
 
 export function createColumns(
-  onUpdate: (date: string, role: string, user: IUser) => void
+  onUpdate: (date: string, role: string, user: IUser) => void,
+  submissions: ISubmission[],
+  users: IUser[],
+  allLocationRosters: ILocationRoster[],
+  location: Location
 ): ColumnDef<TableData>[] {
   return [
     {
@@ -22,15 +26,27 @@ export function createColumns(
     ...BAND_ROLES.map((role) => ({
       accessorKey: role,
       header: role.charAt(0).toUpperCase() + role.slice(1),
-      cell: ({ row }: { row: Row<TableData> }) => {
+      cell: ({
+        row,
+        column,
+      }: {
+        row: Row<TableData>;
+        column: Column<TableData>;
+      }) => {
         const dateStr = row.original.dateStr;
         const worshipTeam = row.original.worshipTeam;
+
         return (
           <RosterCell
             date={dateStr}
             role={role}
+            colId={column.id}
             worshipTeam={worshipTeam}
+            submissions={submissions}
+            allLocationRosters={allLocationRosters}
+            location={location}
             onUpdate={onUpdate}
+            users={users}
           />
         );
       },

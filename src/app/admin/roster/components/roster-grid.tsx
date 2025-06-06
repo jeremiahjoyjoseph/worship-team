@@ -1,8 +1,5 @@
 "use client";
 
-import { Location } from "@/types/user";
-import { format, parse } from "date-fns";
-import React from "react";
 import {
   Table,
   TableBody,
@@ -11,8 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { BAND_ROLES } from "@/constants/band-roles";
+import { ILocationRoster, ISubmission } from "@/types/roster";
+import { IUser, Location } from "@/types/user";
 import { getAllSundays } from "@/util/date-utils";
-import { ILocationRoster } from "@/types/roster";
 import {
   ColumnFiltersState,
   flexRender,
@@ -20,20 +19,27 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { format, parse } from "date-fns";
+import React from "react";
 import { createColumns, TableData } from "./columns";
-import { BAND_ROLES } from "@/constants/band-roles";
-import { IUser } from "@/types/user";
 
 interface RosterGridProps {
   month: string;
   location: Location;
   locationRoster: ILocationRoster;
-  onUpdate: (date: string, role: string, user: IUser) => void;
+  submissions: ISubmission[];
+  users: IUser[];
+  allLocationRosters: ILocationRoster[];
+  onUpdate?: (date: string, role: string, user: IUser) => void;
 }
 
 export function RosterGrid({
   month,
+  location,
   locationRoster,
+  submissions,
+  users,
+  allLocationRosters,
   onUpdate,
 }: RosterGridProps) {
   const sundays = getAllSundays(month);
@@ -59,10 +65,17 @@ export function RosterGrid({
 
   const table = useReactTable({
     data: tableData,
-    columns: createColumns(onUpdate),
+    columns: createColumns(
+      onUpdate!,
+      submissions,
+      users,
+      allLocationRosters,
+      location
+    ),
     state: {
       columnFilters,
     },
+
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,

@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-import { format, parse } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +8,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ISubmission } from "@/types/roster";
 import { IUser } from "@/types/user";
+import { format, parse } from "date-fns";
 
 interface AddUserProps {
   date: string;
@@ -18,6 +18,8 @@ interface AddUserProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onUserSelect: (user: IUser) => void;
+  users: IUser[];
+  submissions: ISubmission[];
 }
 
 export function AddUser({
@@ -26,14 +28,9 @@ export function AddUser({
   isOpen,
   onOpenChange,
   onUserSelect,
+  users,
+  submissions,
 }: AddUserProps) {
-  const [users, setUsers] = React.useState<IUser[]>([]);
-
-  React.useEffect(() => {
-    // TODO: Implement user fetching and filtering logic
-    setUsers([]);
-  }, []);
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -45,16 +42,46 @@ export function AddUser({
         </DialogHeader>
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-2">
-            {users.map((user) => (
-              <Button
-                key={user._id}
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => onUserSelect(user)}
-              >
-                {user.fullName}
-              </Button>
-            ))}
+            {users.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No available users
+              </p>
+            ) : (
+              [...users]
+                .sort((a, b) =>
+                  (a.fullName ?? "").localeCompare(b.fullName ?? "")
+                )
+                .map((user) => (
+                  <Button
+                    key={user._id}
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => onUserSelect(user)}
+                  >
+                    <span>
+                      {user.fullName}
+                      <span className="text-xs text-muted-foreground ml-2">
+                        ({user.wtRolePrimary})
+                      </span>
+                      {user.wtRoleSecondary && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          ({user.wtRoleSecondary})
+                        </span>
+                      )}
+                      {user.wtRoleSpare && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          ({user.wtRoleSpare})
+                        </span>
+                      )}
+                      {user.allBandRoles && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          (All)
+                        </span>
+                      )}
+                    </span>
+                  </Button>
+                ))
+            )}
           </div>
         </ScrollArea>
       </DialogContent>

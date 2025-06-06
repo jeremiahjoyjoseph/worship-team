@@ -1,10 +1,12 @@
-import { ILocationRoster } from "@/types/roster";
+import { IRoster } from "@/types/roster";
 
 export const getRoster = async (month?: string) => {
   try {
     if (!month) {
       throw new Error("You need to pass a month");
     }
+
+    month = month.replace(/\s+/g, "-");
 
     const response = await fetch(
       `/api/roster?month=${encodeURIComponent(month)}`
@@ -78,13 +80,10 @@ export const createRoster = async (month?: string) => {
   }
 };
 
-export const updateRosterTemplate = async (
-  month: string,
-  templateRoster: ILocationRoster[]
-) => {
+export const updateRoster = async (month: string, roster: IRoster) => {
   try {
-    if (!month || !templateRoster) {
-      throw new Error("You need to pass both month and templateRoster");
+    if (!month || !roster) {
+      throw new Error("You need to pass both month and roster");
     }
 
     const response = await fetch("/api/roster", {
@@ -94,23 +93,23 @@ export const updateRosterTemplate = async (
       },
       body: JSON.stringify({
         month: month.replaceAll("-", " "),
-        roster: templateRoster,
+        roster: { ...roster },
       }),
     });
 
     const { success, data, message } = await response.json();
 
     if (!response.ok) {
-      throw new Error(message || "Failed to update roster template");
+      throw new Error(message || "Failed to update roster");
     }
 
     if (!success) {
-      throw new Error(`Failed to update roster template: ${message}`);
+      throw new Error(`Failed to update roster: ${message}`);
     }
 
     return data;
   } catch (error) {
-    console.error("Error updating roster template:", error);
+    console.error("Error updating roster:", error);
     throw error;
   }
 };

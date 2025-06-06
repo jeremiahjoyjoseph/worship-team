@@ -58,10 +58,8 @@ export function EditDetailsDialog<TData extends IUser>({
   };
 
   const handleSave = () => {
-    console.log("Saving user details:", formState);
     updateUser(user._id, formState)
       .then(({ data }) => {
-        console.log("User updated successfully");
         alert("User details updated successfully!");
         updateRow(data);
         setOpen(false);
