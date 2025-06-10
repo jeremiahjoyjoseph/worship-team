@@ -9,18 +9,24 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { IUser } from "@/types/user";
+import { IUser, Location } from "@/types/user";
 import { format, parse } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import React from "react";
 
 interface AddUserProps {
   date: string;
   role: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onUserSelect: (user: IUser) => void;
+  onUserSelect: (users: IUser[]) => void;
   users: IUser[];
+  selectedUsers: IUser[];
+  userAssignments: Map<string, { location: Location; role: string }>;
+  currentLocation: Location;
 }
 
 export function AddUser({
@@ -30,35 +36,48 @@ export function AddUser({
   onOpenChange,
   onUserSelect,
   users,
+  selectedUsers,
+  userAssignments,
+  currentLocation,
 }: AddUserProps) {
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>(
+    selectedUsers.map((user) => user._id)
+  );
+
+  // Add event listener for Escape key
+  React.useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isOpen) {
+        onOpenChange(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, onOpenChange]);
 
   const handleUserToggle = (userId: string) => {
-    setSelectedUsers((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(userId)) {
-        newSet.delete(userId);
-      } else {
-        newSet.add(userId);
-      }
-      return newSet;
-    });
+    setSelectedUserIds((prev) =>
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
+    );
   };
 
   const handleConfirm = () => {
-    selectedUsers.forEach((userId) => {
-      const user = users.find((u) => u._id === userId);
-      if (user) {
-        onUserSelect(user);
-      }
-    });
-    setSelectedUsers(new Set());
+    const selectedUsers = users.filter((user) =>
+      selectedUserIds.includes(user._id)
+    );
+    onUserSelect(selectedUsers);
+    setSelectedUserIds([]);
     onOpenChange(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="min-w-[500px] max-w-[80vw] max-h-[80vh] overflow-y-auto w-auto">
         <DialogHeader>
           <DialogTitle>
             Select {role} for{" "}
@@ -76,51 +95,69 @@ export function AddUser({
                 .sort((a, b) =>
                   (a.fullName ?? "").localeCompare(b.fullName ?? "")
                 )
-                .map((user) => (
-                  <div key={user._id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={user._id}
-                      checked={selectedUsers.has(user._id)}
-                      onCheckedChange={() => handleUserToggle(user._id)}
-                    />
-                    <label htmlFor={user._id} className="flex-1 cursor-pointer">
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start"
-                        onClick={() => handleUserToggle(user._id)}
+                .map((user) => {
+                  const assignment = userAssignments.get(user._id);
+                  const isAssignedElsewhere =
+                    assignment && assignment.location !== currentLocation;
+
+                  return (
+                    <div key={user._id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={user._id}
+                        checked={selectedUserIds.includes(user._id)}
+                        onCheckedChange={() => handleUserToggle(user._id)}
+                      />
+                      <label
+                        htmlFor={user._id}
+                        className="flex-1 cursor-pointer"
                       >
-                        <span>
-                          {user.fullName}
-                          <span className="text-xs text-muted-foreground ml-2">
-                            ({user.wtRolePrimary})
-                          </span>
-                          {user.wtRoleSecondary && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              ({user.wtRoleSecondary})
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start h-auto"
+                          onClick={() => handleUserToggle(user._id)}
+                        >
+                          <div className="flex flex-col items-start">
+                            <span>
+                              {user.fullName}
+                              <span className="text-xs text-muted-foreground ml-2">
+                                ({user.wtRolePrimary})
+                              </span>
+                              {user.wtRoleSecondary && (
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  ({user.wtRoleSecondary})
+                                </span>
+                              )}
+                              {user.wtRoleSpare && (
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  ({user.wtRoleSpare})
+                                </span>
+                              )}
+                              {user.allBandRoles && (
+                                <span className="text-xs text-muted-foreground ml-2">
+                                  (All)
+                                </span>
+                              )}
                             </span>
-                          )}
-                          {user.wtRoleSpare && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              ({user.wtRoleSpare})
-                            </span>
-                          )}
-                          {user.allBandRoles && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              (All)
-                            </span>
-                          )}
-                        </span>
-                      </Button>
-                    </label>
-                  </div>
-                ))
+                            {isAssignedElsewhere && (
+                              <Alert className="mt-1 py-1 px-2 bg-yellow-50 border-yellow-200">
+                                <AlertCircle className="h-3 w-3 text-yellow-600" />
+                                <AlertDescription className="text-xs text-yellow-600">
+                                  Currently assigned to {assignment?.role} at{" "}
+                                  {assignment?.location}
+                                </AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        </Button>
+                      </label>
+                    </div>
+                  );
+                })
             )}
           </div>
         </ScrollArea>
         <DialogFooter>
-          <Button onClick={handleConfirm} disabled={selectedUsers.size === 0}>
-            Confirm Selection
-          </Button>
+          <Button onClick={handleConfirm}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

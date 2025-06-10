@@ -30,7 +30,7 @@ interface RosterGridProps {
   submissions: ISubmission[];
   users: IUser[];
   allLocationRosters: ILocationRoster[];
-  onUpdate?: (date: string, role: string, user: IUser) => void;
+  onRosterUpdate: (updatedRoster: ILocationRoster[]) => void;
 }
 
 export function RosterGrid({
@@ -40,10 +40,10 @@ export function RosterGrid({
   submissions,
   users,
   allLocationRosters,
-  onUpdate,
+  onRosterUpdate,
 }: RosterGridProps) {
   const sundays = getAllSundays(month);
-  const roleColumnWidth = `calc((100% - 100px) / ${BAND_ROLES.length})`;
+  const columnWidth = `calc(100% / ${BAND_ROLES.length + 1})`;
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -66,11 +66,12 @@ export function RosterGrid({
   const table = useReactTable({
     data: tableData,
     columns: createColumns(
-      onUpdate!,
       submissions,
       users,
       allLocationRosters,
-      location
+      location,
+      month,
+      onRosterUpdate
     ),
     state: {
       columnFilters,
@@ -90,9 +91,9 @@ export function RosterGrid({
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="capitalize"
+                  className="capitalize border border-gray-200 bg-gray-50"
                   style={{
-                    width: header.id === "date" ? "100px" : roleColumnWidth,
+                    width: columnWidth,
                   }}
                 >
                   {header.isPlaceholder
@@ -113,10 +114,9 @@ export function RosterGrid({
                 <TableCell
                   key={cell.id}
                   style={{
-                    width:
-                      cell.column.id === "date" ? "100px" : roleColumnWidth,
+                    width: columnWidth,
                   }}
-                  className="p-0"
+                  className="p-2 border border-gray-200"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>

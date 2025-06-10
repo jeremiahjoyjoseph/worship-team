@@ -12,11 +12,12 @@ export interface TableData {
 }
 
 export function createColumns(
-  onUpdate: (date: string, role: string, user: IUser) => void,
   submissions: ISubmission[],
   users: IUser[],
   allLocationRosters: ILocationRoster[],
-  location: Location
+  location: Location,
+  month: string,
+  onRosterUpdate: (updatedRoster: ILocationRoster[]) => void
 ): ColumnDef<TableData>[] {
   return [
     {
@@ -45,7 +46,8 @@ export function createColumns(
             submissions={submissions}
             allLocationRosters={allLocationRosters}
             location={location}
-            onUpdate={onUpdate}
+            month={month}
+            onRosterUpdate={onRosterUpdate}
             users={users}
           />
         );

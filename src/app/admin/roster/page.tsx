@@ -10,6 +10,9 @@ import { getAllSundays } from "@/util/date-utils";
 import React from "react";
 import { DataTableToolbarMonth } from "./components/data-table-toolbar-month";
 import { RosterGrid } from "./components/roster-grid";
+import { AvailableUsersList } from "./components/available-users-list";
+import { SettingsProvider } from "./context/settings-context";
+import { SettingsDropdown } from "./components/settings-dropdown";
 
 export default function Roster() {
   const [isLoading, setIsLoading] = React.useState(true);
@@ -68,61 +71,16 @@ export default function Roster() {
     }
   }, [month]);
 
-  const handleUpdateRoster = async (
-    location: Location,
-    date: string,
-    role: string,
-    user: IUser
-  ) => {
+  const handleRosterUpdate = async (updatedRoster: ILocationRoster[]) => {
     try {
-      setIsLoading(true); // Show loading state during update
+      setIsLoading(true);
+      setData(updatedRoster);
 
-      // Create a deep copy of the current data to avoid mutation
-      const updatedData = data.map((locationRoster) => {
-        if (locationRoster.location !== location) return locationRoster;
-
-        return {
-          ...locationRoster,
-          dateRosters: locationRoster.dateRosters.map((dateRoster) => {
-            if (dateRoster.date !== date) return dateRoster;
-
-            return {
-              ...dateRoster,
-              worshipTeam: dateRoster.worshipTeam.map((member) =>
-                member.bandRole === role
-                  ? {
-                      members: member.members
-                        ? [
-                            ...member.members,
-                            {
-                              id: user._id,
-                              name: user.fullName ?? "",
-                            },
-                          ]
-                        : [
-                            {
-                              id: user._id,
-                              name: user.fullName ?? "",
-                            },
-                          ],
-                      bandRole: role as BandRole,
-                    }
-                  : member
-              ),
-            };
-          }),
-        };
-      });
-
-      // Update local state immediately for better UX
-      setData(updatedData);
-
-      // Update the backend
       const currentRoster = await getRoster(month?.replace(/-/g, " "));
       await updateRoster(month!.replace(/-/g, " "), {
         ...currentRoster,
         submissions: currentRoster.submissions,
-        roster: updatedData,
+        roster: updatedRoster,
       });
     } catch (err) {
       console.error("Error updating roster:", err);
@@ -146,53 +104,64 @@ export default function Roster() {
   }, [data]);
 
   return (
-    <div className="w-[100vw] pb-10">
-      <div className="mt-8 px-8">
-        <DataTableToolbarMonth month={month} setMonth={setMonth} />
-      </div>
+    <SettingsProvider>
+      <div className="w-[calc(100vw-32px)] pb-10">
+        <div className="mt-8 px-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Roster Management</h1>
+            <SettingsDropdown />
+          </div>
+          <DataTableToolbarMonth month={month} setMonth={setMonth} />
+        </div>
 
-      <div className="mt-4 px-8">
-        <Tabs defaultValue={LOCATIONS[0]} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            {LOCATIONS.map((location) => (
-              <TabsTrigger
-                key={location}
-                value={location}
-                className="capitalize"
-              >
-                {location}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {LOCATIONS.map((location) => {
-            const locationRoster = locationRosterMap.get(
-              location as Location
-            ) ?? {
-              location: location as Location,
-              dateRosters: [],
-            };
-            return (
-              <TabsContent key={location} value={location}>
-                {isLoading ? (
-                  <p className="text-muted-foreground">Loading...</p>
-                ) : (
-                  <RosterGrid
-                    month={month!}
-                    location={location as Location}
-                    locationRoster={locationRoster}
-                    allLocationRosters={data}
-                    submissions={submissions}
-                    users={users}
-                    onUpdate={(date, role, user) =>
-                      handleUpdateRoster(location as Location, date, role, user)
-                    }
-                  />
-                )}
-              </TabsContent>
-            );
-          })}
-        </Tabs>
+        <div className="mt-4 px-8">
+          <Tabs defaultValue={LOCATIONS[0]} className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              {LOCATIONS.map((location) => (
+                <TabsTrigger
+                  key={location}
+                  value={location}
+                  className="capitalize"
+                >
+                  {location}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {LOCATIONS.map((location) => {
+              const locationRoster = locationRosterMap.get(
+                location as Location
+              ) ?? {
+                location: location as Location,
+                dateRosters: [],
+              };
+              return (
+                <TabsContent key={location} value={location}>
+                  {isLoading ? (
+                    <p className="text-muted-foreground">Loading...</p>
+                  ) : (
+                    <>
+                      <RosterGrid
+                        month={month!}
+                        location={location as Location}
+                        locationRoster={locationRoster}
+                        allLocationRosters={data}
+                        submissions={submissions}
+                        users={users}
+                        onRosterUpdate={handleRosterUpdate}
+                      />
+                      <AvailableUsersList
+                        users={users}
+                        submissions={submissions}
+                        location={location as Location}
+                      />
+                    </>
+                  )}
+                </TabsContent>
+              );
+            })}
+          </Tabs>
+        </div>
       </div>
-    </div>
+    </SettingsProvider>
   );
 }
