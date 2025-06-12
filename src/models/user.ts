@@ -26,12 +26,6 @@ const UserSchema: Schema<IUser> = new Schema(
       maxlength: 10,
       required: [true, "Please provide a phone number"],
     },
-    password: {
-      type: String,
-      required: [true, "Please provide a password"],
-      minlength: [8, "Password must be at least 8 characters"],
-      select: false,
-    },
     createdAt: { type: Date, default: Date.now },
     role: {
       type: String,

@@ -27,6 +27,36 @@ export enum Location {
   WEST = "west",
 }
 
+// Type for creating a new user
+export interface CreateUserInput {
+  firstName: string;
+  middleName?: string;
+  lastName?: string;
+  fullName?: string;
+  nickname?: string;
+  username: string;
+  email: string;
+  phone: string;
+  role: Role;
+  gender: "male" | "female";
+  dob?: string;
+  md?: boolean;
+  status: "active" | "inactive";
+  wtRolePrimary?: BandRole;
+  wtRoleSecondary?: BandRole | "";
+  wtRoleSpare?: BandRole | "";
+  allBandRoles?: boolean;
+  locationPrimary?: Location;
+  locationSecondary?: Location | "";
+  locationSpare?: Location | "";
+  allLocations?: boolean;
+}
+
+// Type for user response (without password)
+export interface UserResponse extends Omit<IUser, "password"> {
+  password?: string;
+}
+
 export interface IUser extends Document {
   firstName: string;
   middleName?: string;
@@ -36,7 +66,6 @@ export interface IUser extends Document {
   username: string;
   email: string;
   phone: string;
-  password: string;
   createdAt: Date;
   role: Role;
   lastLogInDate?: Date;
