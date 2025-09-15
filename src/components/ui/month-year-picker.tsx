@@ -65,6 +65,8 @@ interface MonthYearPickerProps {
     chevrons?: ButtonVariant;
   };
   className?: string;
+  showMonthChevrons?: boolean;
+  showYearChevrons?: boolean;
 }
 
 export function MonthYearPicker({
@@ -75,6 +77,8 @@ export function MonthYearPicker({
   disabledDates,
   variant,
   className,
+  showMonthChevrons = true,
+  showYearChevrons = true,
 }: MonthYearPickerProps) {
   const [open, setOpen] = React.useState(false);
   const initialYear = selectedMonth?.getFullYear() ?? new Date().getFullYear();
@@ -101,15 +105,17 @@ export function MonthYearPicker({
 
   return (
     <div className="flex items-center gap-2">
-      <Button
-        variant={variant?.chevrons ?? "outline"}
-        size="icon"
-        onClick={handlePreviousMonth}
-        disabled={!selectedMonth || (minDate && selectedMonth <= minDate)}
-        className="h-8 w-8"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
+      {showMonthChevrons && (
+        <Button
+          variant={variant?.chevrons ?? "outline"}
+          size="icon"
+          onClick={handlePreviousMonth}
+          disabled={!selectedMonth || (minDate && selectedMonth <= minDate)}
+          className="h-8 w-8"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+      )}
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -132,24 +138,28 @@ export function MonthYearPicker({
         <PopoverContent className="w-auto p-3">
           <div className="flex justify-center pt-1 relative items-center">
             <div className="text-sm font-medium">{menuYear}</div>
-            <button
-              onClick={() => setMenuYear(menuYear - 1)}
-              className={cn(
-                buttonVariants({ variant: variant?.chevrons ?? "outline" }),
-                "inline-flex items-center justify-center h-7 w-7 p-0 absolute left-1"
-              )}
-            >
-              <ChevronLeft className="opacity-50 h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setMenuYear(menuYear + 1)}
-              className={cn(
-                buttonVariants({ variant: variant?.chevrons ?? "outline" }),
-                "inline-flex items-center justify-center h-7 w-7 p-0 absolute right-1"
-              )}
-            >
-              <ChevronRight className="opacity-50 h-4 w-4" />
-            </button>
+            {showYearChevrons && (
+              <button
+                onClick={() => setMenuYear(menuYear - 1)}
+                className={cn(
+                  buttonVariants({ variant: variant?.chevrons ?? "outline" }),
+                  "inline-flex items-center justify-center h-7 w-7 p-0 absolute left-1"
+                )}
+              >
+                <ChevronLeft className="opacity-50 h-4 w-4" />
+              </button>
+            )}
+            {showYearChevrons && (
+              <button
+                onClick={() => setMenuYear(menuYear + 1)}
+                className={cn(
+                  buttonVariants({ variant: variant?.chevrons ?? "outline" }),
+                  "inline-flex items-center justify-center h-7 w-7 p-0 absolute right-1"
+                )}
+              >
+                <ChevronRight className="opacity-50 h-4 w-4" />
+              </button>
+            )}
           </div>
 
           <table className="w-full border-collapse space-y-1">
@@ -206,15 +216,17 @@ export function MonthYearPicker({
         </PopoverContent>
       </Popover>
 
-      <Button
-        variant={variant?.chevrons ?? "outline"}
-        size="icon"
-        onClick={handleNextMonth}
-        disabled={!selectedMonth || (maxDate && selectedMonth >= maxDate)}
-        className="h-8 w-8"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+      {showMonthChevrons && (
+        <Button
+          variant={variant?.chevrons ?? "outline"}
+          size="icon"
+          onClick={handleNextMonth}
+          disabled={!selectedMonth || (maxDate && selectedMonth >= maxDate)}
+          className="h-8 w-8"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 }
