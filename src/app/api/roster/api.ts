@@ -6,13 +6,19 @@ export const getRoster = async (month?: string) => {
       throw new Error("You need to pass a month");
     }
 
-    month = month.replace(/\s+/g, "-");
+    // Month is already in the correct format from the URL (e.g., "January-2025")
+    // No need to convert spaces to dashes here
 
     const response = await fetch(
       `/api/roster?month=${encodeURIComponent(month)}`
     );
+
     if (!response.ok) {
-      throw new Error("Failed to fetch roster");
+      // If it's a 404, return null instead of throwing an error
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch roster: ${response.status}`);
     }
 
     const { success, data, message } = await response.json();
@@ -21,7 +27,8 @@ export const getRoster = async (month?: string) => {
       throw new Error(`Failed to fetch roster: ${message}`);
     }
 
-    if (data && data.length) return data[0];
+    if (data) return data;
+    return null; // Return null if no data
   } catch (error) {
     console.error("Error fetching roster:", error);
     throw error;

@@ -57,6 +57,8 @@ interface MonthYearPickerProps {
   minDate?: Date;
   maxDate?: Date;
   disabledDates?: Date[];
+  preventPreviousMonths?: boolean;
+  preventCurrentMonth?: boolean;
   variant?: {
     calendar?: {
       main?: ButtonVariant;
@@ -75,6 +77,8 @@ export function MonthYearPicker({
   minDate,
   maxDate,
   disabledDates,
+  preventPreviousMonths = false,
+  preventCurrentMonth = false,
   variant,
   className,
   showMonthChevrons = true,
@@ -141,9 +145,16 @@ export function MonthYearPicker({
             {showYearChevrons && (
               <button
                 onClick={() => setMenuYear(menuYear - 1)}
+                disabled={
+                  (preventPreviousMonths || preventCurrentMonth) &&
+                  menuYear <= new Date().getFullYear()
+                }
                 className={cn(
                   buttonVariants({ variant: variant?.chevrons ?? "outline" }),
-                  "inline-flex items-center justify-center h-7 w-7 p-0 absolute left-1"
+                  "inline-flex items-center justify-center h-7 w-7 p-0 absolute left-1",
+                  (preventPreviousMonths || preventCurrentMonth) &&
+                    menuYear <= new Date().getFullYear() &&
+                    "opacity-50 cursor-not-allowed"
                 )}
               >
                 <ChevronLeft className="opacity-50 h-4 w-4" />
@@ -167,7 +178,23 @@ export function MonthYearPicker({
               {MONTHS.map((monthRow, i) => (
                 <tr key={i} className="flex w-full mt-2">
                   {monthRow.map((m) => {
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    const currentMonth = currentDate.getMonth();
+
+                    const isPreviousMonth =
+                      preventPreviousMonths &&
+                      (menuYear < currentYear ||
+                        (menuYear === currentYear && m.number < currentMonth));
+
+                    const isCurrentMonth =
+                      preventCurrentMonth &&
+                      menuYear === currentYear &&
+                      m.number === currentMonth;
+
                     const isDisabled =
+                      isPreviousMonth ||
+                      isCurrentMonth ||
                       (maxDate &&
                         (menuYear > maxDate.getFullYear() ||
                           (menuYear === maxDate.getFullYear() &&

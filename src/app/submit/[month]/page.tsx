@@ -28,35 +28,54 @@ export default function SubmitUser(props: {
   }, []);
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <Button onClick={() => router.back()}>
-        <ChevronLeft /> Go Back
-      </Button>
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-[500px]">
-        <Command className="rounded-lg border shadow-md w-full">
-          <CommandInput
-            placeholder="Name"
-            onValueChange={(value) => setQuery(value)}
-            value={query}
-          />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <Button onClick={() => router.back()} className="mb-8">
+            <ChevronLeft className="w-4 h-4 mr-2" /> Go Back
+          </Button>
 
-          {query && (
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              {users.map((user) => (
-                <CommandItem key={user._id}>
-                  <Link
-                    href={`/submit/${month}/${user._id}`}
-                    className="flex w-full"
-                  >
-                    <span className="flex-grow">{user.fullName}</span>
-                  </Link>
-                </CommandItem>
-              ))}
-            </CommandList>
-          )}
-        </Command>
-      </main>
+          <main className="space-y-8">
+            <div className="text-center md:text-left">
+              <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                Select Your Name
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Choose your name from the list below to submit your availability
+              </p>
+            </div>
+
+            <div className="max-w-2xl mx-auto md:mx-0">
+              <Command className="rounded-lg border shadow-md w-full">
+                <CommandInput
+                  placeholder="Search by name..."
+                  onValueChange={(value) => setQuery(value)}
+                  value={query}
+                  className="h-12 text-base"
+                />
+
+                {query && (
+                  <CommandList className="max-h-80">
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    {users.map((user) => (
+                      <CommandItem key={user.id} className="p-2">
+                        <Link
+                          href={`/submit/${month}/${user.id}`}
+                          className="flex w-full items-center"
+                        >
+                          <p className="flex-grow text-base">
+                            {user.full_name}
+                          </p>
+                        </Link>
+                      </CommandItem>
+                    ))}
+                  </CommandList>
+                )}
+              </Command>
+            </div>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
