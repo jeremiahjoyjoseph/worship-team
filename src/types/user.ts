@@ -1,5 +1,3 @@
-import { Document } from "mongoose";
-
 export enum Role {
   ADMIN = "admin",
   WORSHIP_PASTOR = "worship-pastor",
@@ -52,38 +50,39 @@ export interface CreateUserInput {
   allLocations?: boolean;
 }
 
-// Type for user response (without password)
-export interface UserResponse extends Omit<IUser, "password"> {
-  password?: string;
-}
-
-export interface IUser extends Document {
-  firstName: string;
-  middleName?: string;
-  lastName?: string;
-  fullName?: string;
+// Supabase User type
+export interface IUser {
+  id: string;
+  first_name: string;
+  middle_name?: string;
+  last_name?: string;
+  full_name?: string;
   nickname?: string;
   username: string;
   email: string;
   phone: string;
-  createdAt: Date;
+  created_at: string;
   role: Role;
-  lastLogInDate?: Date;
-  wtRolePrimary?: BandRole;
-  wtRoleSecondary?: BandRole | "";
-  wtRoleSpare?: BandRole | "";
-  allBandRoles?: boolean;
+  last_login_date?: string;
+  wt_role_primary?: BandRole;
+  wt_role_secondary?: BandRole | "";
+  wt_role_spare?: BandRole | "";
+  all_band_roles?: boolean;
   gender: "male" | "female";
   dob?: string;
   md?: boolean;
   status: "active" | "inactive";
-  locationPrimary?: Location;
-  locationSecondary?: Location | "";
-  locationSpare?: Location | "";
-  allLocations?: boolean;
+  location_primary?: Location;
+  location_secondary?: Location | "";
+  location_spare?: Location | "";
+  all_locations?: boolean;
   slug?: string;
-  resetPasswordToken?: string;
-  resetPasswordExpire?: Date;
-  updatedAt?: Date;
-  _id: string;
+  reset_password_token?: string;
+  reset_password_expire?: string;
+  updated_at?: string;
+}
+
+// Type for user response (without password)
+export interface UserResponse extends Omit<IUser, "password"> {
+  password?: string;
 }

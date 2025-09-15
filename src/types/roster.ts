@@ -1,52 +1,52 @@
-import { Document } from "mongoose";
 import { BandRole, Location } from "./user";
 import { IUser } from "./user";
 
 export interface IWorshipTeamMember {
   id: string;
   name: string;
-  isMd?: boolean;
+  is_md?: boolean;
 }
 
 export interface IWorshipTeam {
-  bandRole: BandRole;
+  band_role: BandRole;
   members: IWorshipTeamMember[];
 }
 
 export interface IDateRoster {
   date: string;
-  worshipTeam: IWorshipTeam[];
+  worship_team: IWorshipTeam[];
 }
 
 export interface ILocationRoster {
   location: Location;
-  dateRosters: IDateRoster[];
+  date_rosters: IDateRoster[];
 }
 
 export interface IEventDate {
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   name: string;
   description?: string;
 }
 
 export interface ISubmission {
-  userId: string;
-  submittedDates: string[];
+  user_id: string;
+  submitted_dates: string[];
 }
 
-export interface IRoster extends Document {
+export interface IRoster {
+  id: string;
   name: string;
   month: string;
-  requiredDates: string[];
+  required_dates: string[];
   submissions: ISubmission[];
   roster: ILocationRoster[];
   notes: string[];
-  eventDates: IEventDate[];
-  createdAt: Date;
-  updatedAt: Date;
+  event_dates: IEventDate[];
+  created_at: string;
+  updated_at: string;
 }
 
 export type AvailabilityUser = IUser & {
-  submittedDates: string[];
+  submitted_dates: string[];
 };

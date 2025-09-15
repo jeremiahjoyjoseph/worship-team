@@ -1,12 +1,8 @@
 // types/global.d.ts
-import type { Mongoose } from "mongoose";
+// Global type definitions for the application
 
 declare global {
-  // eslint-disable-next-line no-var
-  var mongoose: {
-    conn: Mongoose | null;
-    promise: Promise<Mongoose> | null;
-  };
+  // Add any global types here if needed
 }
 
 export {};

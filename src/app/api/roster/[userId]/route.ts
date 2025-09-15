@@ -1,14 +1,11 @@
-import connectToDatabase from "@/lib/mongodb";
-import Roster from "@/models/roster";
 import { NextRequest, NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 export async function GET(
   req: NextRequest,
   context: { params: { userId: string } }
 ) {
   try {
-    await connectToDatabase();
-
     const { searchParams } = new URL(req.url);
     const month = searchParams.get("month");
     const { userId } = context.params;
@@ -20,18 +17,29 @@ export async function GET(
       );
     }
 
-    const roster = await Roster.findOne({ month: month.replaceAll("-", " ") });
-    if (!roster) {
+    // Get roster by month
+    const { data: roster, error: rosterError } = await supabase
+      .from("rosters")
+      .select("id")
+      .eq("month", month.replaceAll("-", " "))
+      .single();
+
+    if (rosterError || !roster) {
       return NextResponse.json(
         { success: false, message: "Roster not found" },
         { status: 404 }
       );
     }
 
-    const userSubmission = roster.submissions.find(
-      (sub) => sub.userId === userId
-    );
-    if (!userSubmission) {
+    // Get user submission
+    const { data: submission, error: submissionError } = await supabase
+      .from("roster_submissions")
+      .select("submitted_dates")
+      .eq("roster_id", roster.id)
+      .eq("user_id", userId)
+      .single();
+
+    if (submissionError || !submission) {
       return NextResponse.json(
         { success: false, message: "No submission found for this user" },
         { status: 404 }
@@ -41,7 +49,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       message: "Submitted dates fetched successfully",
-      data: userSubmission.submittedDates,
+      data: submission.submitted_dates,
     });
   } catch (error) {
     console.error("Error in GET handler:", error);
@@ -57,8 +65,6 @@ export async function PUT(
   context: { params: { userId: string } }
 ) {
   try {
-    await connectToDatabase();
-
     const { searchParams } = new URL(req.url);
     const month = searchParams.get("month")?.replace(/-/g, " ");
     const { userId } = context.params;
@@ -78,31 +84,39 @@ export async function PUT(
       );
     }
 
-    const roster = await Roster.findOne({ month });
+    // Get roster by month
+    const { data: roster, error: rosterError } = await supabase
+      .from("rosters")
+      .select("id")
+      .eq("month", month)
+      .single();
 
-    if (!roster || (Array.isArray(roster) && roster.length === 0)) {
+    if (rosterError || !roster) {
       return NextResponse.json(
         { success: false, message: "Roster not found" },
         { status: 404 }
       );
     }
 
-    const index = roster.submissions.findIndex((sub) => sub.userId === userId);
+    // Upsert submission
+    const { data: submission, error: submissionError } = await supabase
+      .from("roster_submissions")
+      .upsert({
+        roster_id: roster.id,
+        user_id: userId,
+        submitted_dates: body.dates,
+      })
+      .select()
+      .single();
 
-    if (index === -1) {
-      roster.submissions.push({ userId, submittedDates: body.dates });
-    } else {
-      roster.submissions[index].submittedDates = body.dates;
+    if (submissionError) {
+      throw submissionError;
     }
-
-    await roster.save();
 
     return NextResponse.json({
       success: true,
       message: "Availability has been submitted",
-      data: roster.submissions[
-        index !== -1 ? index : roster.submissions.length - 1
-      ],
+      data: submission,
     });
   } catch (error) {
     console.error("Error in PUT handler:", error);

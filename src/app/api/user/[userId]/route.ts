@@ -1,7 +1,5 @@
-import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/user";
-import mongoose from "mongoose";
 import { NextResponse } from "next/server";
+import { userService } from "@/lib/supabase-db";
 
 export async function GET(
   request: Request,
@@ -10,13 +8,7 @@ export async function GET(
   try {
     const { userId } = params;
 
-    // Validate the id
-    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
-      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
-    }
-
-    await connectToDatabase();
-    const user = await User.findById(userId);
+    const user = await userService.getUserById(userId);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -41,29 +33,9 @@ export async function PUT(
 ) {
   try {
     const { userId } = params;
-
-    // Validate the id
-    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
-      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
-    }
-
     const body = await request.json();
 
-    await connectToDatabase();
-
-    // Fetch existing user
-    const existingUser = await User.findById(userId);
-    if (!existingUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Merge existing user with updates
-    const updatedData = { ...existingUser.toObject(), ...body };
-
-    // Update user with merged data
-    const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
-      new: true,
-    });
+    const updatedUser = await userService.updateUser(userId, body);
 
     return NextResponse.json(
       {
@@ -89,17 +61,7 @@ export async function DELETE(
   try {
     const { userId } = params;
 
-    // Validate the id
-    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
-      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
-    }
-
-    await connectToDatabase();
-    const deletedUser = await User.findByIdAndDelete(userId);
-
-    if (!deletedUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    await userService.deleteUser(userId);
 
     return NextResponse.json(
       { success: true, message: "User deleted successfully" },

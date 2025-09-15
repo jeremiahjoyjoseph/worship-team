@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
-import connectToDatabase from "@/lib/mongodb";
-import User from "@/models/user";
-import { CreateUserInput } from "@/types/user";
+import { userService } from "@/lib/supabase-db";
 
 export async function GET() {
   try {
-    await connectToDatabase();
-    const users = await User.find();
+    const users = await userService.getAllUsers();
     return NextResponse.json(
       { success: true, message: "We have a team!", data: users },
       { status: 200 }
@@ -32,43 +29,30 @@ export async function POST(request: Request) {
       );
     }
 
-    await connectToDatabase();
+    // Check for existing users
+    for (const userData of users) {
+      const exists = await userService.checkUserExists(
+        userData.email,
+        userData.username
+      );
+      if (exists) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `User with email ${userData.email} or username ${userData.username} already exists`,
+          },
+          { status: 400 }
+        );
+      }
+    }
 
-    const processedUsers = await Promise.all(
-      users.map(async (userData: CreateUserInput) => {
-        const existingUser = await User.findOne({
-          $or: [{ email: userData.email }, { username: userData.username }],
-        });
-
-        if (existingUser) {
-          throw new Error(
-            `User with email ${userData.email} or username ${userData.username} already exists`
-          );
-        }
-
-        const fullName =
-          userData.fullName ||
-          `${userData.firstName}${
-            userData.middleName ? ` ${userData.middleName}` : ""
-          }${userData.lastName ? ` ${userData.lastName}` : ""}`;
-
-        return {
-          ...userData,
-          fullName,
-          createdAt: new Date(),
-          status: userData.status || "active",
-        };
-      })
-    );
-
-    const createdUsers = await User.insertMany(processedUsers);
-    const usersWithoutPassword = createdUsers.map((user) => user.toObject());
+    const createdUsers = await userService.createUsers(users);
 
     return NextResponse.json(
       {
         success: true,
-        message: `Successfully created ${usersWithoutPassword.length} user(s)`,
-        data: usersWithoutPassword,
+        message: `Successfully created ${createdUsers.length} user(s)`,
+        data: createdUsers,
       },
       { status: 201 }
     );
@@ -97,22 +81,12 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await connectToDatabase();
-
-    // Delete users by IDs
-    const result = await User.deleteMany({ _id: { $in: ids } });
-
-    if (result.deletedCount === 0) {
-      return NextResponse.json(
-        { success: false, error: "No users deleted. IDs may not exist." },
-        { status: 404 }
-      );
-    }
+    await userService.deleteUsers(ids);
 
     return NextResponse.json(
       {
         success: true,
-        message: `Deleted ${result.deletedCount} user(s)`,
+        message: `Deleted ${ids.length} user(s)`,
       },
       { status: 200 }
     );
