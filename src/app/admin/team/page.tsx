@@ -41,7 +41,7 @@ export default function Team() {
     getUsers()
       .then((users) => {
         const sortedUsers: IUser[] = users.sort((a: IUser, b: IUser) =>
-          (a.fullName ?? "").localeCompare(b.fullName ?? "")
+          (a.full_name ?? "").localeCompare(b.full_name ?? "")
         );
         setData(sortedUsers);
       })
@@ -63,7 +63,7 @@ export default function Team() {
 
   const updateRow = React.useCallback((updatedUser: IUser) => {
     setData((prev) =>
-      prev.map((user) => (user._id === updatedUser._id ? updatedUser : user))
+      prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
     );
   }, []);
 

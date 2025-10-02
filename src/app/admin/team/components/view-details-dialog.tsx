@@ -31,13 +31,13 @@ export function ViewDetailsDialog<TData extends IUser>({
         <DialogHeader>
           <DialogTitle>User Details</DialogTitle>
           <DialogDescription>
-            {`Details of ${user.fullName || user.username}`}
+            {`Details of ${user.full_name || user.username}`}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-1 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-left">Full Name</Label>
-            <TextP className="col-span-3">{user.fullName || "N/A"}</TextP>
+            <TextP className="col-span-3">{user.full_name || "N/A"}</TextP>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-left">Email</Label>
@@ -53,12 +53,14 @@ export function ViewDetailsDialog<TData extends IUser>({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-left">Primary Band Role</Label>
-            <TextP className="col-span-3">{user.wtRolePrimary || "N/A"}</TextP>
+            <TextP className="col-span-3">
+              {user.wt_role_primary || "N/A"}
+            </TextP>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-left">Primary Location</Label>
             <TextP className="col-span-3">
-              {user.locationPrimary || "N/A"}
+              {user.location_primary || "N/A"}
             </TextP>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -68,7 +70,7 @@ export function ViewDetailsDialog<TData extends IUser>({
           <div className="grid grid-cols-4 items-center gap-4">
             <Label className="text-left">Created At</Label>
             <TextP className="col-span-3">
-              {new Date(user.createdAt).toLocaleDateString()}
+              {new Date(user.created_at).toLocaleDateString()}
             </TextP>
           </div>
         </div>

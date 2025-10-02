@@ -6,7 +6,7 @@ export const columns: ColumnDef<IUser>[] = [
   {
     accessorKey: "fullName",
     header: "Full Name",
-    cell: ({ row }) => <span>{row.original.fullName || "N/A"}</span>,
+    cell: ({ row }) => <span>{row.original.full_name || "N/A"}</span>,
   },
   {
     accessorKey: "email",

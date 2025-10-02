@@ -41,13 +41,13 @@ export function EditDetailsDialog<TData extends IUser>({
   const { updateRow } = useUserTableContext();
 
   const [formState, setFormState] = useState({
-    locationPrimary: user.locationPrimary,
+    locationPrimary: user.location_primary,
     status: user.status,
-    fullName: user.fullName || "",
+    fullName: user.full_name || "",
     email: user.email,
     role: user.role,
     phone: user.phone || "",
-    wtRolePrimary: user.wtRolePrimary || undefined,
+    wtRolePrimary: user.wt_role_primary || undefined,
   });
 
   const handleChange = (field: string, value: string | BandRole) => {
@@ -58,7 +58,7 @@ export function EditDetailsDialog<TData extends IUser>({
   };
 
   const handleSave = () => {
-    updateUser(user._id, formState)
+    updateUser(user.id, formState)
       .then(({ data }) => {
         alert("User details updated successfully!");
         updateRow(data);
@@ -78,7 +78,7 @@ export function EditDetailsDialog<TData extends IUser>({
         <DialogHeader>
           <DialogTitle>Edit User Details</DialogTitle>
           <DialogDescription>
-            {`Edit details of ${user.fullName || user.username}`}
+            {`Edit details of ${user.full_name || user.username}`}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -180,7 +180,7 @@ export function EditDetailsDialog<TData extends IUser>({
             <Label className="text-left">Created At</Label>
             <Input
               className="col-span-3"
-              defaultValue={new Date(user.createdAt).toLocaleDateString()}
+              defaultValue={new Date(user.created_at).toLocaleDateString()}
               disabled
             />
           </div>
